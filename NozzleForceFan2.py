@@ -81,7 +81,8 @@ def calc_force_fan(
         graph,
         use_gui,
         num_nozzles=8,               
-        nozzle_offset=[2.8, 0, 0]):  
+        nozzle_offset=[2.8, 0, 0],
+        cone_divisions=15):  
    
     start_time = time.time()
     wsf = 0.001  # World scaling factor (1 unit = 1 mm)
@@ -148,7 +149,7 @@ def calc_force_fan(
     # Calculate geometric distribution variables for a single nozzle pattern
     base_ray_height = 50*wsf + d1/(2*math.tan(nozzle_spread*math.pi/180/2))
     cone_diameter = base_ray_height*math.tan(nozzle_spread*math.pi/180/2)*2
-    cone_stepsize = cone_diameter/15
+    cone_stepsize = cone_diameter/cone_divisions
     circle_number = round(cone_diameter/cone_stepsize)
     cone_area = (cone_diameter/2)**2*math.pi
     
@@ -369,4 +370,5 @@ def calc_force_fan(
 
     return total_force, total_astroem_area, total_hits_all_nozzles, individual_nozzle_data
 
-#calc_force_fan('2dx1h_disc', [0,0,0], 1, 30, 0.8, 200000, 500, True, True, False)
+if __name__ == "__main__":
+    calc_force_fan('2dx1h_disc', [0,0,0], 1, 30, 0.8, 200000, 500, True, True, False)

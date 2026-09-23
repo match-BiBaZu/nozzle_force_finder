@@ -961,5 +961,6 @@ def calc_force(
 #print((Ast*1000000/78.54-1)*100, Ast*1000000, hit_number)
 #Fw, Ast, hit_number, Cc = calc_force('1_5dx1h_disc', [0,0,0], 1.17, 25, 4, 40, 0, rays, False, False, False, False)
 #print(Ast*1000000, hit_number)
-calc_force('4dx1h_disc', [0,0,0], 1.17, 25, 4, 40, 0, 2000, False, False, False, False)#5mm_rectangle
+if __name__ == "__main__":
+    calc_force('4dx1h_disc', [0,0,0], 1.17, 25, 4, 40, 0, 2000, False, False, False, True)#5mm_rectangle
 

@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Individual impulse measurement files (per-impulse summary/timeseries CSVs).
+# These are large and regenerable; the aggregated overview_*.csv files are kept.
+**/impulse_*.csv
