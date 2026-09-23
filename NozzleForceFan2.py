@@ -80,12 +80,13 @@ def calc_force_fan(
         print_results,
         graph,
         use_gui,
-        num_nozzles=8,               
-        nozzle_offset=[2.8, 0, 0],
+        num_nozzles=24,
+        nozzle_offset=[2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 5.4, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 5.4, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8],
         cone_divisions=15):  
    
     start_time = time.time()
     wsf = 0.001  # World scaling factor (1 unit = 1 mm)
+    start_pos = [c * wsf for c in start_pos]
 
     if (use_gui):
         p.connect(p.GUI)
@@ -100,7 +101,7 @@ def calc_force_fan(
         p.resetDebugVisualizerCamera(
             cameraDistance=100.0*wsf,         
             cameraYaw=-35.0,             
-            cameraPitch=0,          
+            cameraPitch=35,          
             cameraTargetPosition=[0, 0, 0] 
         )
 
@@ -175,14 +176,23 @@ def calc_force_fan(
     rayMissColor = [0, 1, 0]
     rayHitColor = [1, 0, 0]
 
-    offset_scaled = np.array(nozzle_offset) * wsf
-    start_nozzle_index_offset = -(num_nozzles - 1) / 2.0
+    # Nozzle positions along X from consecutive gaps (in mm, scaled by wsf).
+    # nozzle_offset[i] = distance between nozzle i and nozzle i+1.
+    # Array is centered so its midpoint sits at x=0.
+    gaps = np.atleast_1d(np.asarray(nozzle_offset, dtype=float))
+    if gaps.size != num_nozzles - 1:
+        raise ValueError(
+            f"nozzle_offset must hold num_nozzles-1={num_nozzles - 1} gaps, got {gaps.size}"
+        )
+    gaps_scaled = gaps * wsf
+    x_positions = np.concatenate(([0.0], np.cumsum(gaps_scaled)))
+    x_positions -= x_positions[-1] / 2.0
 
     # Generate full batched ray configurations
     for n in range(num_nozzles):
-        n_offset = (start_nozzle_index_offset + n) * offset_scaled
-        
-        local_ray_from_base = [n_offset[0], n_offset[1], -nozzle_distance*wsf-(d1/(2*math.tan(nozzle_spread*math.pi/180/2))) + n_offset[2]]
+        n_offset_x = float(x_positions[n])
+
+        local_ray_from_base = [n_offset_x, 0.0, -nozzle_distance*wsf-(d1/(2*math.tan(nozzle_spread*math.pi/180/2)))]
         local_ray_to_base = [local_ray_from_base[0], local_ray_from_base[1], local_ray_from_base[2] + base_ray_height]
         
         rayFrom.append(local_ray_from_base)
@@ -371,4 +381,4 @@ def calc_force_fan(
     return total_force, total_astroem_area, total_hits_all_nozzles, individual_nozzle_data
 
 if __name__ == "__main__":
-    calc_force_fan('2dx1h_disc', [0,0,0], 1, 30, 0.8, 200000, 500, True, True, False)
+    calc_force_fan('Qf4i', [-40,-40,0], 1, 17.5, 0.8, 200000, 100, True, True, True)
