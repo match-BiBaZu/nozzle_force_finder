@@ -76,13 +76,14 @@ def calc_force_fan(
         nozzle_distance, 
         nozzle_diameter, 
         nozzle_pressure,
-        ray_number,
-        print_results,
-        graph,
-        use_gui,
+        ray_number=100,
+        print_results=False,
+        graph=False,
+        use_gui=False,
         num_nozzles=24,
         nozzle_offset=[2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 5.4, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 5.4, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8],
-        cone_divisions=15):  
+        cone_divisions=7,
+        mesh_coefficient=0.49):  
    
     start_time = time.time()
     wsf = 0.001  # World scaling factor (1 unit = 1 mm)
@@ -337,7 +338,7 @@ def calc_force_fan(
         C_dis = 0.8 
 
         # Choked flow calculation
-        Fw = 0.49*Ast * (p0 * (2/(k+1))**(k/(k-1)) * (1 + C_dis * k) - p1) * (d1 / (d1 + 2 * y * math.tan(gamma * math.pi / 180 / 2)))**2 
+        Fw = mesh_coefficient*Ast * (p0 * (2/(k+1))**(k/(k-1)) * (1 + C_dis * k) - p1) * (d1 / (d1 + 2 * y * math.tan(gamma * math.pi / 180 / 2)))**2 
         
         Fw_scaled = Fw * Cc 
 
@@ -381,4 +382,4 @@ def calc_force_fan(
     return total_force, total_astroem_area, total_hits_all_nozzles, individual_nozzle_data
 
 if __name__ == "__main__":
-    calc_force_fan('Qf4i', [-40,-40,0], 1, 17.5, 0.8, 200000, 100, True, True, True)
+    calc_force_fan('Qf4i', [-25.2,-40,0], 1, 17.5, 0.8, 200000, 100, True, True, True)
